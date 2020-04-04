@@ -3,8 +3,11 @@
 // TODO - feature gates for
 // - NJ_USE_LIBC
 // - NJ_CHROMA_FILTER
+//
+// TODO - modify to produce an RGBA 4bpp image, so it can be DMA'd to the framebuffer
 
 use core::convert::TryFrom;
+use core::fmt;
 use core::slice;
 
 pub mod capi;
@@ -25,11 +28,24 @@ pub enum Error {
 
 #[derive(Debug)]
 pub struct ImageInfo {
-    width: usize,
-    height: usize,
+    pub width: usize,
+    pub height: usize,
     /// RGB888 if true, otherwise GRAY8
-    is_color: bool,
-    image: &'static [u8],
+    pub is_color: bool,
+    pub image: &'static [u8],
+}
+
+impl fmt::Display for ImageInfo {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(
+            f,
+            "ImageInfo {}x{}, color: {}, image length: {}",
+            self.width,
+            self.height,
+            self.is_color,
+            self.image.len()
+        )
+    }
 }
 
 /// NOTE: there be globals in use here, see nanojpeg.c, `static nj_context_t nj;`
