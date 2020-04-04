@@ -1,11 +1,5 @@
 #![no_std]
 
-// TODO - feature gates for
-// - NJ_USE_LIBC
-// - NJ_CHROMA_FILTER
-//
-// TODO - modify to produce an RGBA 4bpp image, so it can be DMA'd to the framebuffer
-
 use core::convert::TryFrom;
 use core::fmt;
 use core::slice;

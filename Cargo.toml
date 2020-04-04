@@ -11,3 +11,7 @@ build = "build.rs"
 cc = "1.0"
 
 [dev-dependencies]
+
+[features]
+default = ["libc"]
+libc = []
