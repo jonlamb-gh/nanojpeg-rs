@@ -137,10 +137,33 @@ mod tests {
         assert_eq!(info.width, 1203);
         assert_eq!(info.height, 1593);
         assert_eq!(info.is_color, true);
-        #[cfg(not(feature = "pbp32"))]
+
+        #[cfg(not(feature = "bpp32"))]
         assert_eq!(info.image.len(), 1203 * 1593 * 3);
-        #[cfg(feature = "pbp32")]
+        #[cfg(feature = "bpp32")]
         assert_eq!(info.image.len(), 1203 * 1593 * 4);
+
+        #[cfg(all(not(feature = "bpp32"), not(feature = "bgr")))]
+        assert_eq!(
+            &info.image[61024..61024 + 8],
+            &[204, 150, 253, 202, 147, 253, 203, 150]
+        );
+        #[cfg(all(feature = "bpp32", not(feature = "bgr")))]
+        assert_eq!(
+            &info.image[61024..61024 + 8],
+            &[148, 117, 96, 255, 160, 121, 104, 255]
+        );
+        #[cfg(all(feature = "bgr", not(feature = "bgr")))]
+        assert_eq!(
+            &info.image[61024..61024 + 8],
+            &[204, 251, 147, 202, 253, 150, 203, 253]
+        );
+        #[cfg(all(feature = "bpp32", feature = "bgr"))]
+        assert_eq!(
+            &info.image[61024..61024 + 8],
+            &[96, 117, 148, 255, 104, 121, 160, 255]
+        );
+
         decoder.deinit();
     }
 }

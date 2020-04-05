@@ -859,9 +859,15 @@ NJ_INLINE void njConvert(void) {
                 register int y = py[x] << 8;
                 register int cb = pcb[x] - 128;
                 register int cr = pcr[x] - 128;
+#if NJ_USE_BGR
+                *prgb++ = njClip((y + 454 * cb            + 128) >> 8);
+                *prgb++ = njClip((y -  88 * cb - 183 * cr + 128) >> 8);
+                *prgb++ = njClip((y            + 359 * cr + 128) >> 8);
+#else
                 *prgb++ = njClip((y            + 359 * cr + 128) >> 8);
                 *prgb++ = njClip((y -  88 * cb - 183 * cr + 128) >> 8);
                 *prgb++ = njClip((y + 454 * cb            + 128) >> 8);
+#endif
 #if NJ_USE_32BPP
                 *prgb++ = 0xFF;
 #endif

@@ -15,7 +15,7 @@ fn main() {
         build.define("NULL", "0");
     }
 
-    #[cfg(feature = "pbp32")]
+    #[cfg(feature = "bpp32")]
     {
         build.define("NJ_USE_32BPP", "1");
     }
@@ -28,4 +28,5 @@ fn main() {
     build.compile("nanojpeg");
 
     println!("cargo:rerun-if-env-changed=CC");
+    println!("cargo:rerun-if-changed=nanojpeg/nanojpeg.c");
 }
