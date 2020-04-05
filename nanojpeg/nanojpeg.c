@@ -84,6 +84,11 @@
 //                           (default).
 // NJ_CHROMA_FILTER=0      = Use simple pixel repetition for chroma upsampling
 //                           (bad quality, but faster and less code).
+//
+// NJ_USE_32BPP=0          = 24 bits per pixel (default).
+// NJ_USE_32BPP=1          = 32 bits per pixel (alpha == 0xFF).
+// NJ_USE_BGR=0            = RGB pixel order (default).
+// NJ_USE_BGR=1            = BGR pixel order.
 
 
 // API
@@ -194,6 +199,13 @@ void njDone(void);
     #define NJ_CHROMA_FILTER 1
 #endif
 
+#ifndef NJ_USE_32BPP
+    #define NJ_USE_32BPP 0
+#endif
+
+#ifndef NJ_USE_BGR
+    #define NJ_USE_BGR 0
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 // EXAMPLE PROGRAM                                                           //
@@ -568,7 +580,11 @@ NJ_INLINE void njDecodeSOF(void) {
         if (!(c->pixels = (unsigned char*) njAllocMem(c->stride * nj.mbheight * c->ssy << 3))) njThrow(NJ_OUT_OF_MEM);
     }
     if (nj.ncomp == 3) {
+#if NJ_USE_32BPP
+        nj.rgb = (unsigned char*) njAllocMem(nj.width * nj.height * (nj.ncomp + 1));
+#else
         nj.rgb = (unsigned char*) njAllocMem(nj.width * nj.height * nj.ncomp);
+#endif
         if (!nj.rgb) njThrow(NJ_OUT_OF_MEM);
     }
     njSkip(nj.length);
@@ -846,6 +862,9 @@ NJ_INLINE void njConvert(void) {
                 *prgb++ = njClip((y            + 359 * cr + 128) >> 8);
                 *prgb++ = njClip((y -  88 * cb - 183 * cr + 128) >> 8);
                 *prgb++ = njClip((y + 454 * cb            + 128) >> 8);
+#if NJ_USE_32BPP
+                *prgb++ = 0xFF;
+#endif
             }
             py += nj.comp[0].stride;
             pcb += nj.comp[1].stride;
@@ -911,6 +930,10 @@ int njGetWidth(void)            { return nj.width; }
 int njGetHeight(void)           { return nj.height; }
 int njIsColor(void)             { return (nj.ncomp != 1); }
 unsigned char* njGetImage(void) { return (nj.ncomp == 1) ? nj.comp[0].pixels : nj.rgb; }
+#if NJ_USE_32BPP
+int njGetImageSize(void)        { return nj.width * nj.height * (nj.ncomp + 1); }
+#else
 int njGetImageSize(void)        { return nj.width * nj.height * nj.ncomp; }
+#endif
 
 #endif // _NJ_INCLUDE_HEADER_ONLY

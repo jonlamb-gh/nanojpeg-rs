@@ -14,9 +14,15 @@ fn main() {
         build.define("NJ_USE_LIBC", "0");
         build.define("NULL", "0");
     }
-    #[cfg(feature = "libc")]
+
+    #[cfg(feature = "pbp32")]
     {
-        build.define("NJ_USE_LIBC", "1");
+        build.define("NJ_USE_32BPP", "1");
+    }
+
+    #[cfg(feature = "bgr")]
+    {
+        build.define("NJ_USE_BGR", "1");
     }
 
     build.compile("nanojpeg");

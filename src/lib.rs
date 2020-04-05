@@ -1,3 +1,7 @@
+// TODO
+// - feature for static/pre-allocated buffers, give the decoder some pile of storage
+//   bytes, remove the need for malloc/free
+
 #![no_std]
 
 use core::convert::TryFrom;
@@ -133,7 +137,10 @@ mod tests {
         assert_eq!(info.width, 1203);
         assert_eq!(info.height, 1593);
         assert_eq!(info.is_color, true);
+        #[cfg(not(feature = "pbp32"))]
         assert_eq!(info.image.len(), 1203 * 1593 * 3);
+        #[cfg(feature = "pbp32")]
+        assert_eq!(info.image.len(), 1203 * 1593 * 4);
         decoder.deinit();
     }
 }
